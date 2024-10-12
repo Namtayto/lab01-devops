@@ -5,3 +5,8 @@ provider "aws" {
 module "vpc" {
   source = "./vpc"
 }
+
+module "subnets" {
+  source = "./subnets"
+  vpc_id = module.vpc.vpc_id
+}
