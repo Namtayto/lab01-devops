@@ -153,12 +153,12 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Security group for public instance
-      VpcId: !Ref VPC  # Tham chiếu đến VPC đã tạo
+      VpcId: !Ref VPC # Tham chiếu đến VPC đã tạo
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: 42.116.6.42/32  # Replace with your IP
+          CidrIp: 42.116.6.42/32 # Replace with your IP
       SecurityGroupEgress:
         - IpProtocol: -1
           FromPort: 0
@@ -173,12 +173,12 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Security group for private instance
-      VpcId: !Ref VPC  # Tham chiếu đến VPC đã tạo
+      VpcId: !Ref VPC # Tham chiếu đến VPC đã tạo
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          SourceSecurityGroupId: !Ref PublicInstanceSecurityGroup  # Allow only Public SG
+          SourceSecurityGroupId: !Ref PublicInstanceSecurityGroup # Allow only Public SG
       SecurityGroupEgress:
         - IpProtocol: -1
           FromPort: 0
@@ -187,6 +187,29 @@ Resources:
       Tags:
         - Key: Name
           Value: PrivateInstanceSecurityGroup
+
+  # Default Security Group for VPC
+  VPCDefaultSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Default Security Group for VPC"
+      GroupName: "vpc-default-security-group"
+      VpcId: !Ref VPC # Tham chiếu đến VPC ID
+      SecurityGroupEgress:
+        - IpProtocol: "-1" # All protocols
+          FromPort: 0
+          ToPort: 0
+          CidrIp: "0.0.0.0/0"
+          Description: "Allow all outbound traffic"
+      SecurityGroupIngress:
+        - IpProtocol: "-1" # All protocols
+          FromPort: 0
+          ToPort: 0
+          CidrIp: "0.0.0.0/0"
+          Description: "Allow inbound traffic within the security group"
+      Tags:
+        - Key: Name
+          Value: "vpc-default-security-group"
 
 Outputs:
   VpcId:
@@ -200,7 +223,7 @@ Outputs:
   PrivateSubnetId:
     Value: !Ref PrivateSubnet
     Description: The ID of the private subnet
-    
+
   PublicInstanceId:
     Description: Public EC2 Instance ID
     Value: !Ref PublicInstance
