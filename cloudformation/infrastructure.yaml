@@ -10,124 +10,28 @@ Resources:
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: MyVPC
+          Value: vpc_group8
 
   PublicSubnet:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPC
+      VpcId: !Ref VPC # Tham chiếu đến VPC đã tạo
       CidrBlock: 10.0.1.0/24
       MapPublicIpOnLaunch: true
       AvailabilityZone: us-east-1a
       Tags:
         - Key: Name
-          Value: PublicSubnet
+          Value: public_subnet # Tên Subnet
 
   PrivateSubnet:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPC
+      VpcId: !Ref VPC # Tham chiếu đến VPC đã tạo
       CidrBlock: 10.0.2.0/24
-      AvailabilityZone: us-east-1a
+      AvailabilityZone: us-east-1b
       Tags:
         - Key: Name
-          Value: PrivateSubnet
-
-  InternetGateway:
-    Type: AWS::EC2::InternetGateway
-    Properties:
-      Tags:
-        - Key: Name
-          Value: MyInternetGateway
-
-  AttachGateway:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId: !Ref VPC
-      InternetGatewayId: !Ref InternetGateway
-
-  PublicRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: PublicRouteTable
-
-  PublicRoute:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PublicRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGateway
-
-  PrivateRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: PrivateRouteTable
-
-  PublicSubnetRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnet
-      RouteTableId: !Ref PublicRouteTable
-
-  PrivateSubnetRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnet
-      RouteTableId: !Ref PrivateRouteTable
-
-  PublicSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Allow access to public instances
-      VpcId: !Ref VPC
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 0.0.0.0/0
-      Tags:
-        - Key: Name
-          Value: PublicSecurityGroup
-
-  PrivateSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Private instance security group
-      VpcId: !Ref VPC
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 10.0.0.0/16
-      Tags:
-        - Key: Name
-          Value: PrivateSecurityGroup
-
-  PublicEC2Instance:
-    Type: AWS::EC2::Instance
-    Properties:
-      InstanceType: t2.micro
-      SubnetId: !Ref PublicSubnet
-      SecurityGroupIds:
-        - !Ref PublicSecurityGroup
-      ImageId: ami-0c55b159cbfafe1f0 # AMI for Amazon Linux 2 in us-east-1
-      KeyName: my-key-pair
-
-  PrivateEC2Instance:
-    Type: AWS::EC2::Instance
-    Properties:
-      InstanceType: t2.micro
-      SubnetId: !Ref PrivateSubnet
-      SecurityGroupIds:
-        - !Ref PrivateSecurityGroup
-      ImageId: ami-0c55b159cbfafe1f0 # AMI for Amazon Linux 2 in us-east-1
-      KeyName: my-key-pair
+          Value: private_subnet # Tên Subnet
 
 Outputs:
   VpcId:
@@ -141,11 +45,3 @@ Outputs:
   PrivateSubnetId:
     Value: !Ref PrivateSubnet
     Description: The ID of the private subnet
-
-  PublicEC2InstanceId:
-    Value: !Ref PublicEC2Instance
-    Description: The ID of the public EC2 instance
-
-  PrivateEC2InstanceId:
-    Value: !Ref PrivateEC2Instance
-    Description: The ID of the private EC2 instance
