@@ -1,6 +1,6 @@
 # lab01-devops
 ## 👨‍💻 To run
-1. Configure the AWS CLI to add the access key and secret key
+1. By running the `aws configure` command, you can set your credentials for the current environment. Terraform will then use these credentials to authenticate. Ensure you have the AWS CLI installed and configured
 ```
 aws configure
 ```
@@ -8,7 +8,7 @@ aws configure
 ```
 terraform init
 ```
-3. Create an execution plan, showing what actions Terraform will take to update infrastructure based on the current configuration and stateble values
+3. Create an execution plan, showing what actions Terraform will take to update infrastructure based on the current configuration and state values
 ```
 terraform plan
 ```
