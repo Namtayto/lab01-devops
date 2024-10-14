@@ -110,6 +110,44 @@ Resources:
       SubnetId: !Ref PrivateSubnet
       RouteTableId: !Ref PrivateRouteTable
 
+  # Creating Key Pair on AWS using SSH-public key
+  DeployerKeyPair:
+    Type: AWS::EC2::KeyPair
+    Properties:
+      KeyName: !Ref KeyName
+      PublicKeyMaterial: |
+        -----BEGIN PUBLIC KEY-----
+        ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsQIQrVbvND6KSOb13ceFSKN5Qy6sL6U4F/Ab+5SesGRl5HPNC5z9+OyzuN7jCstnOJcfknPbESHCW9nSwrw/8NdFVx+J0/YsqYhXWvt6doeflcKs2BYyqNCvfZYluH79otoOrc9lD5mWgbFEbzN1O/ct3Lny9fNgM85P+gYwK219SodCqahfKtHYXf1vqJQja12jHDj7hLd2UvkGwZJzd6ZNWXCRVQ+xrdIkJvbvjYKHOpRt8C5MoG1rdcT9QHqDJFQr8TkDEUifCf2Rcu+WSH5Al1jdrVjr7bRtYDGxTVYbL5I5fu969uXtoxLga53rMwtPWOoVUYHgfFL2S1XlB baoba@LAPTOP-H4MJVCI1
+        -----END PUBLIC KEY-----
+
+  # Public EC2 Instance
+  PublicInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0866a3c8686eaeeba
+      InstanceType: t2.micro
+      SubnetId: !Ref PublicSubnet
+      KeyName: !Ref DeployerKeyPair
+      SecurityGroupIds:
+        - !Ref PublicInstanceSecurityGroup
+      Tags:
+        - Key: Name
+          Value: Public EC2
+
+  # Private EC2 Instance
+  PrivateInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0866a3c8686eaeeba
+      InstanceType: t2.micro
+      SubnetId: !Ref PrivateSubnet
+      KeyName: !Ref DeployerKeyPair
+      SecurityGroupIds:
+        - !Ref PrivateInstanceSecurityGroup
+      Tags:
+        - Key: Name
+          Value: Private EC2
+
 Outputs:
   VpcId:
     Value: !Ref VPC
