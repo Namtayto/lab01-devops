@@ -16,3 +16,12 @@ terraform plan
 ```
 terraform apply
 ```
+
+## :key: If you want to create your own key pair
+
+1. Creating an SSH key pair on your local system serves as a secure and convenient method for authenticating
+```
+cd ec2
+ssh-keygen -t rsa -b 2048 -f my-key
+```
+This will generate my-key and my-key.pub files in our ec2 directory. We will add the Public Key (my-key.pub) to the AWS instance and use the Private key (my-key) to authenticate ourselves when connecting to remote servers using SSH.
