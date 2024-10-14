@@ -17,6 +17,8 @@ terraform plan
 terraform apply
 ```
 
+**Note:** Ensure to replace your public IP in security_group_ec2.tf
+
 ## :key: If you want to create your own key pair
 
 1. Creating an SSH key pair on your local system serves as a secure and convenient method for authenticating
