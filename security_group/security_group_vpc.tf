@@ -13,7 +13,7 @@ resource "aws_security_group" "vpc_default" {
     cidr_blocks      = ["0.0.0.0/0"]
   }
 
-  # Outbound rules - cho phép tất cả các kết nối ra ngoài
+  # Outbound rules
   egress {
     description      = "Allow all outbound traffic"
     from_port        = 0

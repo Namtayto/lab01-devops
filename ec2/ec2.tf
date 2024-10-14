@@ -5,7 +5,7 @@ resource "aws_key_pair" "deployer" {
 }
 
 resource "aws_instance" "public_instance" {
-  ami           = "ami-0866a3c8686eaeeba"  # Thay đổi ID AMI theo khu vực của bạn
+  ami           = "ami-0866a3c8686eaeeba"
   instance_type = "t2.micro"
   subnet_id     = var.public_subnet_id
 
@@ -21,14 +21,14 @@ resource "aws_instance" "public_instance" {
 }
 
 resource "aws_instance" "private_instance" {
-  ami           = "ami-0866a3c8686eaeeba"  # Thay đổi ID AMI theo khu vực của bạn
+  ami           = "ami-0866a3c8686eaeeba"
   instance_type = "t2.micro"
   subnet_id     = var.private_subnet_id
 
-  # Gán Security Group cho instance
+  #Security Group for instance
   vpc_security_group_ids = [var.private_sg_id]
 
-  # Gán Key Pair để SSH qua Public EC2
+  #Key Pair for SSH
   key_name = aws_key_pair.deployer.key_name
 
   tags = {
