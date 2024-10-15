@@ -15,24 +15,24 @@ Resources:
   PublicSubnet:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPC # Tham chiếu đến VPC đã tạo
+      VpcId: !Ref VPC
       CidrBlock: 10.0.1.0/24
       MapPublicIpOnLaunch: true
       AvailabilityZone: us-east-1a
       Tags:
         - Key: Name
-          Value: public_subnet # Tên Subnet
+          Value: public_subnet
 
   PrivateSubnet:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref VPC # Tham chiếu đến VPC đã tạo
+      VpcId: !Ref VPC
       CidrBlock: 10.0.2.0/24
       AvailabilityZone: us-east-1b
       Tags:
         - Key: Name
-          Value: private_subnet # Tên Subnet
-  # Internet Gateway for Public Subnet
+          Value: private_subnet
+
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
@@ -46,7 +46,6 @@ Resources:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
 
-  # Route Table for Public Subnet
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
@@ -55,7 +54,6 @@ Resources:
         - Key: Name
           Value: PublicRouteTable
 
-  # Route to allow Internet access for Public Subnet via Internet Gateway
   PublicRoute:
     Type: AWS::EC2::Route
     Properties:
@@ -63,20 +61,17 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
 
-  # Associate Public Route Table with Public Subnet
   PublicRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref PublicSubnet
       RouteTableId: !Ref PublicRouteTable
 
-  # Elastic IP for NAT Gateway
   ElasticIP:
     Type: AWS::EC2::EIP
     Properties:
       Domain: vpc
 
-  # NAT Gateway for Private Subnet
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:
@@ -86,7 +81,6 @@ Resources:
         - Key: Name
           Value: NATGateway
 
-  # Route Table for Private Subnet
   PrivateRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
@@ -95,7 +89,6 @@ Resources:
         - Key: Name
           Value: PrivateRouteTable
 
-  # Route to allow Internet access for Private Subnet via NAT Gateway
   PrivateRoute:
     Type: AWS::EC2::Route
     Properties:
@@ -103,62 +96,48 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId: !Ref NATGateway
 
-  # Associate Private Route Table with Private Subnet
   PrivateRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref PrivateSubnet
       RouteTableId: !Ref PrivateRouteTable
 
-  # Creating Key Pair on AWS using SSH-public key
-  DeployerKeyPair:
-    Type: AWS::EC2::KeyPair
-    Properties:
-      KeyName: !Ref KeyName
-      PublicKeyMaterial: |
-        -----BEGIN PUBLIC KEY-----
-        ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsQIQrVbvND6KSOb13ceFSKN5Qy6sL6U4F/Ab+5SesGRl5HPNC5z9+OyzuN7jCstnOJcfknPbESHCW9nSwrw/8NdFVx+J0/YsqYhXWvt6doeflcKs2BYyqNCvfZYluH79otoOrc9lD5mWgbFEbzN1O/ct3Lny9fNgM85P+gYwK219SodCqahfKtHYXf1vqJQja12jHDj7hLd2UvkGwZJzd6ZNWXCRVQ+xrdIkJvbvjYKHOpRt8C5MoG1rdcT9QHqDJFQr8TkDEUifCf2Rcu+WSH5Al1jdrVjr7bRtYDGxTVYbL5I5fu969uXtoxLga53rMwtPWOoVUYHgfFL2S1XlB baoba@LAPTOP-H4MJVCI1
-        -----END PUBLIC KEY-----
-
-  # Public EC2 Instance
   PublicInstance:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-0866a3c8686eaeeba
+      ImageId: ami-0866a3c8686eaeeba # Use the appropriate AMI ID
       InstanceType: t2.micro
       SubnetId: !Ref PublicSubnet
-      KeyName: !Ref DeployerKeyPair
+      KeyName: my-key # Replace with your existing key pair name
       SecurityGroupIds:
         - !Ref PublicInstanceSecurityGroup
       Tags:
         - Key: Name
           Value: Public EC2
 
-  # Private EC2 Instance
   PrivateInstance:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-0866a3c8686eaeeba
+      ImageId: ami-0866a3c8686eaeeba # Use the appropriate AMI ID
       InstanceType: t2.micro
       SubnetId: !Ref PrivateSubnet
-      KeyName: !Ref DeployerKeyPair
+      KeyName: my-key # Replace with your existing key pair name
       SecurityGroupIds:
         - !Ref PrivateInstanceSecurityGroup
       Tags:
         - Key: Name
           Value: Private EC2
 
-  # Security Group for Public Instance
   PublicInstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Security group for public instance
-      VpcId: !Ref VPC # Tham chiếu đến VPC đã tạo
+      VpcId: !Ref VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          CidrIp: 42.116.6.42/32 # Replace with your IP
+          CidrIp: 0.0.0.0/0 # Adjust this to your IP range for security
       SecurityGroupEgress:
         - IpProtocol: -1
           FromPort: 0
@@ -168,17 +147,16 @@ Resources:
         - Key: Name
           Value: PublicInstanceSecurityGroup
 
-  # Security Group for Private Instance
   PrivateInstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Security group for private instance
-      VpcId: !Ref VPC # Tham chiếu đến VPC đã tạo
+      VpcId: !Ref VPC
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          SourceSecurityGroupId: !Ref PublicInstanceSecurityGroup # Allow only Public SG
+          SourceSecurityGroupId: !Ref PublicInstanceSecurityGroup
       SecurityGroupEgress:
         - IpProtocol: -1
           FromPort: 0
@@ -187,29 +165,6 @@ Resources:
       Tags:
         - Key: Name
           Value: PrivateInstanceSecurityGroup
-
-  # Default Security Group for VPC
-  VPCDefaultSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: "Default Security Group for VPC"
-      GroupName: "vpc-default-security-group"
-      VpcId: !Ref VPC # Tham chiếu đến VPC ID
-      SecurityGroupEgress:
-        - IpProtocol: "-1" # All protocols
-          FromPort: 0
-          ToPort: 0
-          CidrIp: "0.0.0.0/0"
-          Description: "Allow all outbound traffic"
-      SecurityGroupIngress:
-        - IpProtocol: "-1" # All protocols
-          FromPort: 0
-          ToPort: 0
-          CidrIp: "0.0.0.0/0"
-          Description: "Allow inbound traffic within the security group"
-      Tags:
-        - Key: Name
-          Value: "vpc-default-security-group"
 
 Outputs:
   VpcId:
