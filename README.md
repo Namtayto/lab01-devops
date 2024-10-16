@@ -1,5 +1,5 @@
 # lab01-devops
-## 👨‍💻 To run
+## 👨‍💻 To run Terraform
 1. By running the `aws configure` command, you can set your credentials for the current environment. Terraform will then use these credentials to authenticate. Ensure you have the AWS CLI installed and configured
 ```
 aws configure
@@ -18,6 +18,27 @@ terraform apply
 ```
 
 **Note:** Ensure to replace your public IP in security_group_ec2.tf
+
+## 👨‍💻 To run CloudFormation
+1. Configure AWS Credentials
+```
+aws configure
+```
+2. Upload Your Public Key for EC2 SSH
+```
+aws ec2 import-key-pair \
+    --key-name "my-key" \
+    --public-key-material file://my-key.pub
+
+```
+
+2. Upload Your Public Key for EC2 SSH
+```
+aws cloudformation create-stack \
+    --stack-name my-stack \
+    --template-body file://cloudformation/infrastructure.yaml \
+    --capabilities CAPABILITY_NAMED_IAM
+```
 
 ## :key: If you want to create your own key pair
 
